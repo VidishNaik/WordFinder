@@ -132,8 +132,6 @@ public class AdvanceSearch extends Activity {
 
         @Override
         protected Void doInBackground(ArrayList<Letters>... arrayList) {
-            for(int i=0;i<arrayList[0].size();i++)
-                Log.e("**********",arrayList[0].get(i).getCharacter() + " " + arrayList[0].get(i).getPosition());
             return null;
         }
     }
