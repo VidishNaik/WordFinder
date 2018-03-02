@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,15 +28,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends Activity {
     ArrayList<String> words = new ArrayList<>();
-    Map<Integer,ArrayList<String>> map = new HashMap<>();
+    static Map<Integer,ArrayList<String>> map = new HashMap<>();
     ArrayAdapter<String> arrayAdapter;
     static String[] count = {"3","4","5","6","7","8","9","10"};
     String s, selectedItem = "";
@@ -57,7 +54,7 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(MainActivity.this,AdvanceSearch.class));
             }
         });
-        //text.performClick();
+        text.performClick();
         progress1 = (ProgressBar) findViewById(R.id.progressbar1);
         new Load().execute(this);
         progress = (ProgressBar) findViewById(R.id.progressbar);

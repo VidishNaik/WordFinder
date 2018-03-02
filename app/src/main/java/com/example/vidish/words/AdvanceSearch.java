@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,9 +11,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -127,12 +128,34 @@ public class AdvanceSearch extends Activity {
         linearLayout.removeView((View) v.getParent());
     }
 
-    private class Search extends AsyncTask<ArrayList<Letters>,Void,Void>
+    private class Search extends AsyncTask<ArrayList<Letters>,Void,ArrayList<String>>
     {
 
         @Override
-        protected Void doInBackground(ArrayList<Letters>... arrayList) {
-            return null;
+        protected ArrayList<String> doInBackground(ArrayList<Letters>... arrayList) {
+            publishProgress();
+            ArrayList<String> words = MainActivity.map.get(Integer.parseInt(selectedItem));
+            for (int i = 0; i < arrayList[0].size(); i++) {
+                for (int j = words.size() - 1; j >= 0; j--)
+                {
+                    if(!(words.get(j).charAt(arrayList[0].get(i).getPosition() - 1) == arrayList[0].get(i).getCharacter().charAt(0)))
+                        words.remove(j);
+                }
+            }
+            return words;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> words) {
+            progressBar.setVisibility(View.GONE);
+            ListView list = (ListView) findViewById(R.id.listview);
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(AdvanceSearch.this,R.layout.spinner_layout,words);
+            list.setAdapter(arrayAdapter);
         }
     }
 }
