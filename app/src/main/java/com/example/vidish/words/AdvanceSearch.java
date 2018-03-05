@@ -31,20 +31,22 @@ public class AdvanceSearch extends Activity {
     LinearLayout linearLayout;
     ProgressBar progressBar;
     String selectedItem = "3";
+    Button button,submit;
+    Spinner spinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advance_search);
 
-        final Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        spinner = (Spinner) findViewById(R.id.spinner);
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
         progressBar.setVisibility(View.GONE);
         linearLayout = (LinearLayout) findViewById(R.id.linearlayout);
         arrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_layout,MainActivity.count);
         alphaAdapter = new ArrayAdapter<String>(this,R.layout.spinner_layout,alphabet);
         spinner.setAdapter(arrayAdapter);
-        Button button = (Button) findViewById(R.id.button);
-        Button submit = (Button) findViewById(R.id.submit);
+        button = (Button) findViewById(R.id.button);
+        submit = (Button) findViewById(R.id.submit);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -99,6 +101,9 @@ public class AdvanceSearch extends Activity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                spinner.setEnabled(false);
+                button.setEnabled(false);
+                submit.setEnabled(false);
                 ArrayList<Letters> arrayList = new ArrayList<Letters>();
                 for(int i=0; i < linearLayout.getChildCount(); i++)
                 {
@@ -169,6 +174,9 @@ public class AdvanceSearch extends Activity {
 
         @Override
         protected void onPostExecute(ArrayList<String> words) {
+            spinner.setEnabled(true);
+            button.setEnabled(true);
+            submit.setEnabled(true);
             progressBar.setVisibility(View.GONE);
             ListView list = (ListView) findViewById(R.id.listview);
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(AdvanceSearch.this,R.layout.spinner_layout,words);
