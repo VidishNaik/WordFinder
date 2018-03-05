@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class MainActivity extends Activity {
     ArrayList<String> words = new ArrayList<>();
-    static Map<Integer,ArrayList<String>> map = new HashMap<>();
+    Map<Integer,ArrayList<String>> map = new HashMap<>();
     ArrayAdapter<String> arrayAdapter;
     static String[] count = {"3","4","5","6","7","8","9","10"};
     String s, selectedItem = "";
@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(MainActivity.this,AdvanceSearch.class));
             }
         });
-        text.performClick();
+        //text.performClick();
         progress1 = (ProgressBar) findViewById(R.id.progressbar1);
         new Load().execute(this);
         progress = (ProgressBar) findViewById(R.id.progressbar);
@@ -192,7 +192,6 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Void v) {
             progress1.setVisibility(View.GONE);
             button.setEnabled(true);
-            Toast.makeText(MainActivity.this, "Words Loaded", Toast.LENGTH_SHORT).show();
         }
     }
 

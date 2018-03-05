@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,6 +17,9 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -134,13 +138,26 @@ public class AdvanceSearch extends Activity {
         @Override
         protected ArrayList<String> doInBackground(ArrayList<Letters>... arrayList) {
             publishProgress();
-            ArrayList<String> words = MainActivity.map.get(Integer.parseInt(selectedItem));
-            for (int i = 0; i < arrayList[0].size(); i++) {
-                for (int j = words.size() - 1; j >= 0; j--)
+            ArrayList<String> words = new ArrayList<>();
+            words.clear();
+            try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(getAssets().open("words.txt")));
+                String s;
+                while ((s = in.readLine()) != null)
                 {
-                    if(!(words.get(j).charAt(arrayList[0].get(i).getPosition() - 1) == arrayList[0].get(i).getCharacter().charAt(0)))
-                        words.remove(j);
+                    if(s.length() == Integer.parseInt(selectedItem))
+                        words.add(s);
                 }
+                for (int i = 0; i < arrayList[0].size(); i++)
+                {
+                    for (int j = words.size() - 1; j >= 0; j--)
+                    if(!arrayList[0].get(i).getCharacter().equals(words.get(j).charAt(arrayList[0].get(i).getPosition() - 1) + ""))
+                    {
+                        Log.e("*************",words.remove(j) + " " + arrayList[0].get(i).getPosition());
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             return words;
         }
