@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -166,7 +165,7 @@ public class AdvanceSearch extends Activity {
                     for (int j = words.size() - 1; j >= 0; j--)
                     if(!arrayList[0].get(i).getCharacter().equals(words.get(j).charAt(arrayList[0].get(i).getPosition() - 1) + ""))
                     {
-                        Log.e("*************",words.remove(j) + " " + arrayList[0].get(i).getPosition());
+                        words.remove(j);
                     }
                 }
             } catch (IOException e) {
