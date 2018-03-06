@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,19 +34,26 @@ public class AdvanceSearch extends Activity {
     String selectedItem = "3";
     Button button,submit;
     Spinner spinner;
+    EditText editText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advance_search);
 
+        button = (Button) findViewById(R.id.button);
+        editText = (EditText) findViewById(R.id.edittext);
+        editText.setText(getIntent().getStringExtra("edittext"));
+        if(editText.length() != 0)
+            editText.setSelection(editText.length());
         spinner = (Spinner) findViewById(R.id.spinner);
+        if(!getIntent().getStringExtra("spinner").equals(""))
+             spinner.setSelection(Integer.parseInt(getIntent().getStringExtra("spinner")));
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
         progressBar.setVisibility(View.GONE);
         linearLayout = (LinearLayout) findViewById(R.id.linearlayout);
         arrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_layout,MainActivity.count);
         alphaAdapter = new ArrayAdapter<String>(this,R.layout.spinner_layout,alphabet);
         spinner.setAdapter(arrayAdapter);
-        button = (Button) findViewById(R.id.button);
         submit = (Button) findViewById(R.id.submit);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

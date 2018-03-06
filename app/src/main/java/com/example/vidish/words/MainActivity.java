@@ -47,13 +47,7 @@ public class MainActivity extends Activity {
 
         TextView text = (TextView) findViewById(R.id.text);
         text.setText(Html.fromHtml("<u>Advanced Search</u>",0));
-        text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,AdvanceSearch.class));
-            }
-        });
-        //text.performClick();
+
         progress = (ProgressBar) findViewById(R.id.progressbar);
         progress.setVisibility(View.GONE);
         final EditText editText = (EditText) findViewById(R.id.edittext);
@@ -145,6 +139,15 @@ public class MainActivity extends Activity {
                         spinner.setEnabled(false);
                         new Words().execute(MainActivity.this);
                     }
+            }
+        });
+        text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(MainActivity.this,AdvanceSearch.class)
+                        .putExtra("edittext",editText.getText().toString())
+                        .putExtra("spinner",selectedItem));
             }
         });
     }

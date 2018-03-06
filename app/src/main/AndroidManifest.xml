@@ -21,7 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AdvanceSearch"></activity>
+        <activity android:name=".AdvanceSearch"
+            android:windowSoftInputMode="stateHidden"/>
     </application>
 
 </manifest>

@@ -11,10 +11,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="letters"
+                android:textSize="24sp"
+                android:inputType="text"
+                android:maxLines="1"
+                android:imeOptions="actionGo"
+                android:focusedByDefault="false"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:foregroundTint="#2196F3"
+                android:backgroundTint="#2196F3"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
