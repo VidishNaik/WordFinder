@@ -25,20 +25,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 
 public class MainActivity extends Activity {
     ArrayList<String> words = new ArrayList<>();
-    Map<Integer,ArrayList<String>> map = new HashMap<>();
     ArrayAdapter<String> arrayAdapter;
     static String[] count = {"3","4","5","6","7","8","9","10"};
     String s, selectedItem = "";
-    ProgressBar progress, progress1;
+    ProgressBar progress;
     Button button;
     Spinner spinner;
     @Override
@@ -55,8 +54,6 @@ public class MainActivity extends Activity {
             }
         });
         //text.performClick();
-        progress1 = (ProgressBar) findViewById(R.id.progressbar1);
-        new Load().execute(this);
         progress = (ProgressBar) findViewById(R.id.progressbar);
         progress.setVisibility(View.GONE);
         final EditText editText = (EditText) findViewById(R.id.edittext);
@@ -64,7 +61,6 @@ public class MainActivity extends Activity {
         spinner = (Spinner) findViewById(R.id.spinner);
         button = (Button) findViewById(R.id.button);
         button.setFocusedByDefault(true);
-        button.setEnabled(false);
         spinner.requestFocus();
         ((LinearLayout)findViewById(R.id.linearlayout)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,69 +155,41 @@ public class MainActivity extends Activity {
         finish();
     }
 
-    private class Load extends AsyncTask<MainActivity, Void, Void> {
-
-        @Override
-        protected Void doInBackground(MainActivity... mainActivities) {
-            publishProgress();
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(getAssets().open("words.txt")));
-                String line;
-                while((line = in.readLine()) != null) {
-                    if(map.containsKey(line.length()))
-                    {
-                        ArrayList temp = map.get(line.length());
-                        temp.add(line);
-                        map.put(line.length(),temp);
-                    }
-                    else {
-                        ArrayList<String> temp = new ArrayList<>();
-                        temp.add(line);
-                        map.put(line.length(),temp);
-                    }
-                }
-            }catch (Exception ignored){
-            }
-            return null;
-        }
-
-        protected void onProgressUpdate(Void... values) {
-            progress1.setVisibility(View.VISIBLE);
-        }
-
-        protected void onPostExecute(Void v) {
-            progress1.setVisibility(View.GONE);
-            button.setEnabled(true);
-        }
-    }
-
     private class Words extends AsyncTask<MainActivity, Void, Void> {
         @Override
         protected Void doInBackground(MainActivity... mainActivities) {
             publishProgress();
-            ArrayList<String> temp = map.get(Integer.parseInt(selectedItem));
-            for (int i=0; i < temp.size(); i++)
-            {
-                LinkedList<String> listEntered = new LinkedList<>(Arrays.asList(s.split("")));
-                LinkedList<String> listFind = new LinkedList<>(Arrays.asList(temp.get(i).split("")));
-                listEntered.remove(0);
-                listFind.remove(0);
-                boolean contains = true;
-                for (int j=0; j < listFind.size(); j++)
+            ArrayList<String> temp = new ArrayList<>();
+            try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(getAssets().open("words.txt")));
+                String str;
+                while ((str = in.readLine()) != null)
                 {
-                    if(listEntered.contains(listFind.get(j)))
+                    if(str.length() == Integer.parseInt(selectedItem))
                     {
-                        listEntered.removeFirstOccurrence(listFind.get(j));
-
-                    }
-                    else
-                    {
-                        contains = false;
-                        break;
+                        List<String> listEntered = new LinkedList<String>(Arrays.asList(s.split("")));
+                        List<String> listFind = new LinkedList<String>(Arrays.asList(str.split("")));
+                        listEntered.remove(0);
+                        listFind.remove(0);
+                        boolean contains = true;
+                        for (int j = listFind.size() - 1; j >= 0; j--)
+                        {
+                            if(listEntered.contains(listFind.get(j)))
+                            {
+                                listEntered.remove(listFind.get(j));
+                            }
+                            else
+                            {
+                                contains = false;
+                                break;
+                            }
+                        }
+                        if(contains)
+                            words.add(str);
                     }
                 }
-                if(contains)
-                    words.add(temp.get(i));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             return null;
         }
