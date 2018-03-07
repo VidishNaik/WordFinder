@@ -23,6 +23,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+//TODO Initialize spinner properly
+//TODO Find words that match edittext input
 public class AdvanceSearch extends Activity {
 
     ArrayAdapter<String> arrayAdapter,alphaAdapter,countAdapter;

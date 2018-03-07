@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+//TODO Check for numeric input
+//TODO Show meaning if touched on word
 public class MainActivity extends Activity {
     ArrayList<String> words = new ArrayList<>();
     ArrayAdapter<String> arrayAdapter;
