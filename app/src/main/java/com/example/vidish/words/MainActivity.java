@@ -10,6 +10,7 @@ import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -56,6 +57,15 @@ public class MainActivity extends Activity {
         button = (Button) findViewById(R.id.button);
         button.setFocusedByDefault(true);
         spinner.requestFocus();
+        spinner.setVisibility(View.INVISIBLE);
+        spinner.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                return false;
+            }
+        });
         ((LinearLayout)findViewById(R.id.linearlayout)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,13 +107,13 @@ public class MainActivity extends Activity {
                 }
                 if (charSequence.length() < 3)
                 {
-                    spinner.setEnabled(false);
+                    spinner.setVisibility(View.INVISIBLE);
                     arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.spinner_layout,new String[]{});
                     spinner.setAdapter(arrayAdapter);
                     return;
                 }
                 else
-                    spinner.setEnabled(true);
+                    spinner.setVisibility(View.VISIBLE);
                 arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.spinner_layout, Arrays.copyOf(count,editText.getText().length()-2));
                 arrayAdapter.setDropDownViewResource(R.layout.spinner_layout);
                 spinner.setAdapter(arrayAdapter);

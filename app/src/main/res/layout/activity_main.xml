@@ -22,7 +22,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:foregroundTint="#2196F3"
-        android:backgroundTint="#2196F3"/>
+        android:padding="12dp"
+        android:background="@drawable/edit_text_round_corner_rectangle"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,9 +37,11 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:spinnerMode="dropdown"
-        android:backgroundTint="#2196F3"
         android:foregroundTint="#2196F3"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_round_corner_rectangle"
+        />
 
     <Button
         android:id="@+id/button"
