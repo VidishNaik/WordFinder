@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -33,9 +34,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-//TODO Check for numeric input
 //TODO Show meaning if touched on word
 public class MainActivity extends Activity {
+    boolean exit = false;
     ArrayList<String> words = new ArrayList<>();
     ArrayAdapter<String> arrayAdapter;
     static String[] count = {"3","4","5","6","7","8","9","10"};
@@ -100,25 +101,30 @@ public class MainActivity extends Activity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 words.clear();
-                if (charSequence.length() > 10)
-                {
-                    Toast.makeText(MainActivity.this, "Word length cannot be more than 10", Toast.LENGTH_SHORT).show();
-                    editText.setText(charSequence.toString().substring(0,charSequence.length() - 1));
-                    editText.setSelection(editText.getText().length());
-                    Log.e("^^^^^^^^^^^^", charSequence.toString());
+                if (charSequence.length() > 0) {
+                    if (isAlpha(charSequence.charAt(charSequence.length() - 1) + "")) {
+                        if (charSequence.length() > 10) {
+                            Toast.makeText(MainActivity.this, "Word length cannot be more than 10", Toast.LENGTH_SHORT).show();
+                            editText.setText(charSequence.toString().substring(0, charSequence.length() - 1));
+                            editText.setSelection(editText.getText().length());
+                            Log.e("^^^^^^^^^^^^", charSequence.toString());
+                        }
+                        if (charSequence.length() < 3) {
+                            spinner.setVisibility(View.INVISIBLE);
+                            arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.spinner_layout, new String[]{});
+                            spinner.setAdapter(arrayAdapter);
+                            return;
+                        } else
+                            spinner.setVisibility(View.VISIBLE);
+                        arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.spinner_layout, Arrays.copyOf(count, editText.getText().length() - 2));
+                        arrayAdapter.setDropDownViewResource(R.layout.spinner_layout);
+                        spinner.setAdapter(arrayAdapter);
+                    } else {
+                        Toast.makeText(MainActivity.this, "Character input only!", Toast.LENGTH_SHORT).show();
+                        editText.setText(charSequence.toString().substring(0, charSequence.length() - 1));
+                        editText.setSelection(editText.getText().length());
+                    }
                 }
-                if (charSequence.length() < 3)
-                {
-                    spinner.setVisibility(View.INVISIBLE);
-                    arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.spinner_layout,new String[]{});
-                    spinner.setAdapter(arrayAdapter);
-                    return;
-                }
-                else
-                    spinner.setVisibility(View.VISIBLE);
-                arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.spinner_layout, Arrays.copyOf(count,editText.getText().length()-2));
-                arrayAdapter.setDropDownViewResource(R.layout.spinner_layout);
-                spinner.setAdapter(arrayAdapter);
             }
 
             @Override
@@ -166,8 +172,25 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+        if(exit)
+        {
+            super.onBackPressed();
+            this.finish();
+            return;
+        }
+        exit = true;
+        Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                exit = false;
+            }
+        },2000);
+    }
+
+    public static boolean isAlpha(String str)
+    {
+        return str.matches("[a-zA-Z]+");
     }
 
     private class Words extends AsyncTask<MainActivity, Void, Void> {
