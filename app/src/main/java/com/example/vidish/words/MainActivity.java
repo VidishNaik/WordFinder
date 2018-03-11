@@ -35,22 +35,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 //TODO Show meaning if touched on word
+//TODO change edittext if user changes it in AdvanceSearch
 public class MainActivity extends Activity {
+    static String[] count = {"3", "4", "5", "6", "7", "8", "9", "10"};
     boolean exit = false;
     ArrayList<String> words = new ArrayList<>();
     ArrayAdapter<String> arrayAdapter;
-    static String[] count = {"3","4","5","6","7","8","9","10"};
     String s, selectedItem = "";
     ProgressBar progress;
     Button button;
     Spinner spinner;
+
+    public static boolean isAlpha(String str) {
+        return str.matches("[a-zA-Z]+");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         TextView text = (TextView) findViewById(R.id.text);
-        text.setText(Html.fromHtml("<u>Advanced Search</u>",0));
+        text.setText(Html.fromHtml("<u>Advanced Search</u>", 0));
 
         progress = (ProgressBar) findViewById(R.id.progressbar);
         progress.setVisibility(View.GONE);
@@ -59,8 +65,9 @@ public class MainActivity extends Activity {
         spinner = (Spinner) findViewById(R.id.spinner);
         button = (Button) findViewById(R.id.button);
         button.setFocusedByDefault(true);
+        button.setVisibility(View.GONE);
         spinner.requestFocus();
-        spinner.setVisibility(View.INVISIBLE);
+        spinner.setVisibility(View.GONE);
         spinner.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -69,7 +76,7 @@ public class MainActivity extends Activity {
                 return false;
             }
         });
-        ((LinearLayout)findViewById(R.id.linearlayout)).setOnClickListener(new View.OnClickListener() {
+        ((LinearLayout) findViewById(R.id.linearlayout)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -85,7 +92,7 @@ public class MainActivity extends Activity {
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     }
-                    if(button.isEnabled())
+                    if (button.isEnabled())
                         button.performClick();
                     return true;
                 }
@@ -110,15 +117,29 @@ public class MainActivity extends Activity {
                             Log.e("^^^^^^^^^^^^", charSequence.toString());
                         }
                         if (charSequence.length() < 3) {
-                            spinner.setVisibility(View.INVISIBLE);
+                            button.setVisibility(View.GONE);
+                            spinner.setVisibility(View.GONE);
                             arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.spinner_layout, new String[]{});
                             spinner.setAdapter(arrayAdapter);
                             return;
-                        } else
+                        } else {
+                            button.setVisibility(View.VISIBLE);
                             spinner.setVisibility(View.VISIBLE);
+                        }
+                        int pos = -1;
+                        Log.e("^^^^^^^^^^^^", selectedItem + " " + arrayAdapter.getCount());
+                        if (!selectedItem.equals("") && !selectedItem.equals("3")) {
+                            if (arrayAdapter.getCount() != Integer.parseInt(selectedItem) - 2) {
+                                pos = spinner.getSelectedItemPosition();
+                            }
+                        }
                         arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.spinner_layout, Arrays.copyOf(count, editText.getText().length() - 2));
                         arrayAdapter.setDropDownViewResource(R.layout.spinner_layout);
                         spinner.setAdapter(arrayAdapter);
+                        if (pos != -1 && pos < arrayAdapter.getCount())
+                            spinner.setSelection(pos);
+                        else
+                            spinner.setSelection(arrayAdapter.getCount() - 1);
                     } else {
                         Toast.makeText(MainActivity.this, "Character input only!", Toast.LENGTH_SHORT).show();
                         editText.setText(charSequence.toString().substring(0, charSequence.length() - 1));
@@ -163,17 +184,17 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                startActivity(new Intent(MainActivity.this,AdvanceSearch.class)
-                        .putExtra("edittext",editText.getText().toString())
-                        .putExtra("spinner",selectedItem));
+                startActivity(new Intent(MainActivity.this, AdvanceSearch.class)
+                        .putExtra("edittext", editText.getText().toString())
+                        .putExtra("spinner", (String) spinner.getSelectedItem()));
+                Log.e("***********", selectedItem);
             }
         });
     }
 
     @Override
     public void onBackPressed() {
-        if(exit)
-        {
+        if (exit) {
             super.onBackPressed();
             this.finish();
             return;
@@ -185,12 +206,7 @@ public class MainActivity extends Activity {
             public void run() {
                 exit = false;
             }
-        },2000);
-    }
-
-    public static boolean isAlpha(String str)
-    {
-        return str.matches("[a-zA-Z]+");
+        }, 2000);
     }
 
     private class Words extends AsyncTask<MainActivity, Void, Void> {
@@ -201,28 +217,22 @@ public class MainActivity extends Activity {
             try {
                 BufferedReader in = new BufferedReader(new InputStreamReader(getAssets().open("words.txt")));
                 String str;
-                while ((str = in.readLine()) != null)
-                {
-                    if(str.length() == Integer.parseInt(selectedItem))
-                    {
+                while ((str = in.readLine()) != null) {
+                    if (str.length() == Integer.parseInt(selectedItem)) {
                         List<String> listEntered = new LinkedList<String>(Arrays.asList(s.split("")));
                         List<String> listFind = new LinkedList<String>(Arrays.asList(str.split("")));
                         listEntered.remove(0);
                         listFind.remove(0);
                         boolean contains = true;
-                        for (int j = listFind.size() - 1; j >= 0; j--)
-                        {
-                            if(listEntered.contains(listFind.get(j)))
-                            {
+                        for (int j = listFind.size() - 1; j >= 0; j--) {
+                            if (listEntered.contains(listFind.get(j))) {
                                 listEntered.remove(listFind.get(j));
-                            }
-                            else
-                            {
+                            } else {
                                 contains = false;
                                 break;
                             }
                         }
-                        if(contains)
+                        if (contains)
                             words.add(str);
                     }
                 }
@@ -237,9 +247,9 @@ public class MainActivity extends Activity {
         }
 
         protected void onPostExecute(Void v) {
-            if(words.size() == 0)
+            if (words.size() == 0)
                 words.add("NO WORDS FOUND");
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,R.layout.spinner_layout,words);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.spinner_layout, words);
             GridView gridView = (GridView) findViewById(R.id.gridview);
             gridView.setAdapter(adapter);
             progress.setVisibility(View.GONE);
