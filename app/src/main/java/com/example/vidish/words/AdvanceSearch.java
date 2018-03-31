@@ -2,6 +2,7 @@ package com.example.vidish.words;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,12 +12,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -39,6 +42,7 @@ public class AdvanceSearch extends Activity {
     Button button, submit;
     Spinner spinner;
     EditText editText;
+    Switch optional;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +53,8 @@ public class AdvanceSearch extends Activity {
         arrayAdapter = new ArrayAdapter<String>(this, R.layout.spinner_layout, count);
         button = (Button) findViewById(R.id.button);
         editText = (EditText) findViewById(R.id.edittext);
-        editText.setText(getIntent().getStringExtra("edittext"));
+        SharedPreferences sharedPreferences = getSharedPreferences("preferences",0);
+        editText.setText(sharedPreferences.getString("edittext",""));
         if (editText.length() != 0) {
             editText.setSelection(editText.length());
         }
@@ -59,14 +64,33 @@ public class AdvanceSearch extends Activity {
         linearLayout = (LinearLayout) findViewById(R.id.linearlayout);
         alphaAdapter = new ArrayAdapter<String>(this, R.layout.spinner_layout, alphabet);
         spinner.setAdapter(arrayAdapter);
-        if (getIntent().getStringExtra("spinner") != null)
-            spinner.setSelection(Integer.parseInt(getIntent().getStringExtra("spinner")) - 1);
+        if (sharedPreferences.getString("spinner",null) != null)
+            spinner.setSelection(Integer.parseInt(sharedPreferences.getString("spinner","1")) - 1);
         else {
             if (editText.length() != 0)
                 spinner.setSelection(editText.length() - 1);
         }
         submit = (Button) findViewById(R.id.submit);
+        optional = (Switch) findViewById(R.id.Switch);
+        optional.setChecked(false);
+        if (editText.length() > 0)
+            optional.setChecked(true);
+        else
+            optional.setChecked(false);
 
+        if(optional.isChecked())
+            editText.setEnabled(true);
+        else
+            editText.setEnabled(false);
+        optional.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    editText.setEnabled(true);
+                else
+                    editText.setEnabled(false);
+            }
+        });
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -165,6 +189,11 @@ public class AdvanceSearch extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        SharedPreferences sharedPreferences = getSharedPreferences("preferences",0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("edittext",editText.getText().toString());
+        editor.putString("spinner",(String) spinner.getSelectedItem());
+        editor.apply();
         this.finish();
     }
 

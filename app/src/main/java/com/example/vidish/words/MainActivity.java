@@ -3,6 +3,7 @@ package com.example.vidish.words;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +46,8 @@ public class MainActivity extends Activity {
     ProgressBar progress;
     Button button;
     Spinner spinner;
+    EditText editText;
+    static boolean paused = false;
 
     public static boolean isAlpha(String str) {
         return str.matches("[a-zA-Z]+");
@@ -60,7 +63,7 @@ public class MainActivity extends Activity {
 
         progress = (ProgressBar) findViewById(R.id.progressbar);
         progress.setVisibility(View.GONE);
-        final EditText editText = (EditText) findViewById(R.id.edittext);
+        editText = (EditText) findViewById(R.id.edittext);
         editText.setFocusedByDefault(false);
         spinner = (Spinner) findViewById(R.id.spinner);
         button = (Button) findViewById(R.id.button);
@@ -114,7 +117,6 @@ public class MainActivity extends Activity {
                             Toast.makeText(MainActivity.this, "Word length cannot be more than 10", Toast.LENGTH_SHORT).show();
                             editText.setText(charSequence.toString().substring(0, charSequence.length() - 1));
                             editText.setSelection(editText.getText().length());
-                            Log.e("^^^^^^^^^^^^", charSequence.toString());
                         }
                         if (charSequence.length() < 3) {
                             button.setVisibility(View.GONE);
@@ -187,7 +189,11 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(MainActivity.this, AdvanceSearch.class)
                         .putExtra("edittext", editText.getText().toString())
                         .putExtra("spinner", (String) spinner.getSelectedItem()));
-                Log.e("***********", selectedItem);
+                SharedPreferences sharedPreferences = getSharedPreferences("preferences", 0);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("edittext", editText.getText().toString());
+                editor.putString("spinner", (String) spinner.getSelectedItem());
+                editor.apply();
             }
         });
     }
@@ -207,6 +213,25 @@ public class MainActivity extends Activity {
                 exit = false;
             }
         }, 2000);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        paused = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (paused) {
+            SharedPreferences sharedPreferences = getSharedPreferences("preferences", 0);
+            editText.setText(sharedPreferences.getString("edittext", ""));
+            spinner.setSelection(Integer.parseInt(sharedPreferences.getString("spinner", "0")) - 3);
+            if (spinner.getSelectedItem() == null)
+                spinner.setSelection(0);
+        }
     }
 
     private class Words extends AsyncTask<MainActivity, Void, Void> {
