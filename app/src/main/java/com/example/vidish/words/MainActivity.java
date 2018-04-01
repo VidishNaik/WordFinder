@@ -48,6 +48,7 @@ public class MainActivity extends Activity {
     Spinner spinner;
     EditText editText;
     static boolean paused = false;
+    Meaning meaning;
 
     public static boolean isAlpha(String str) {
         return str.matches("[a-zA-Z]+");
@@ -129,7 +130,6 @@ public class MainActivity extends Activity {
                             spinner.setVisibility(View.VISIBLE);
                         }
                         int pos = -1;
-                        Log.e("^^^^^^^^^^^^", selectedItem + " " + arrayAdapter.getCount());
                         if (!selectedItem.equals("") && !selectedItem.equals("3")) {
                             if (arrayAdapter.getCount() != Integer.parseInt(selectedItem) - 2) {
                                 pos = spinner.getSelectedItemPosition();
@@ -274,9 +274,23 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Void v) {
             if (words.size() == 0)
                 words.add("NO WORDS FOUND");
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.spinner_layout, words);
+            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.spinner_layout, words);
             GridView gridView = (GridView) findViewById(R.id.gridview);
             gridView.setAdapter(adapter);
+            gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (meaning == null)
+                        meaning = new Meaning();
+                    if(meaning.getStatus() == Status.RUNNING || meaning.getStatus() == Status.PENDING) {
+                        meaning.cancel(true);
+                    }
+                    meaning = new Meaning();
+                    Log.e("%%%%%%%%%%%%%%","EXECUTING FOR " + adapter.getItem(position));
+                    meaning.execute(adapter.getItem(position));
+                    return true;
+                }
+            });
             progress.setVisibility(View.GONE);
             button.setEnabled(true);
             spinner.setEnabled(true);
