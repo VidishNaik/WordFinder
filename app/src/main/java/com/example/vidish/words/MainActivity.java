@@ -202,6 +202,11 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         if (exit) {
             super.onBackPressed();
+            SharedPreferences sharedPreferences = getSharedPreferences("preferences", 0);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("edittext","");
+            editor.putString("spinner","");
+            editor.commit();
             this.finish();
             return;
         }

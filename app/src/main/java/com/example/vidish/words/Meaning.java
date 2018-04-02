@@ -37,17 +37,19 @@ public class Meaning extends AsyncTask<String, Void, String> {
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line + "\n");
             }
-
             return stringBuilder.toString();
         }
         catch (Exception e) {
-            e.printStackTrace();
-            return e.toString();
+            return "0";
         }
     }
 
     @Override
     protected void onPostExecute(String s) {
+        if (s.equals("0")){
+            Log.e("EXCEPTION OCCURED", s);
+            return;
+        }
         try {
             JSONArray results = new JSONObject(s).getJSONArray("results");
             for (int i = 0; i < results.length(); i++)
@@ -56,13 +58,21 @@ public class Meaning extends AsyncTask<String, Void, String> {
                 for (int j=0; j<lexicalEntries.length();j++)
                 {
                     JSONArray entries = lexicalEntries.getJSONObject(j).getJSONArray("entries");
+                    for (int k=0; k<entries.length(); k++)
+                    {
+                        JSONArray senses = entries.getJSONObject(k).getJSONArray("senses");
+                        for (int l=0;l<senses.length();l++)
+                        {
+                            String definitions = senses.getJSONObject(l).getJSONArray("definitions").getString(0);
+                            Log.e("!!!!!!!!!!!!!!!!!!!", definitions);
+                        }
+                    }
                     String lexicalCategory = lexicalEntries.getJSONObject(j).getString("lexicalCategory");
                     String audio = lexicalEntries.getJSONObject(j).getJSONArray("pronunciations").getJSONObject(0).getString("audioFile");
-                    Log.e("^^^^^^^^^^^^^^^^", audio);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("################",e.toString());
         }
     }
 }
