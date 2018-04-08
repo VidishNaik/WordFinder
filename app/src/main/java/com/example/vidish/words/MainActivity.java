@@ -204,8 +204,8 @@ public class MainActivity extends Activity {
             super.onBackPressed();
             SharedPreferences sharedPreferences = getSharedPreferences("preferences", 0);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("edittext","");
-            editor.putString("spinner","");
+            editor.putString("edittext", "");
+            editor.putString("spinner", "");
             editor.commit();
             this.finish();
             return;
@@ -225,18 +225,37 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         paused = true;
+        SharedPreferences sharedPreferences = getSharedPreferences("preferences", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("edittext",editText.getText().toString());
+        editor.putString("spinner",(String) spinner.getSelectedItem());
+        editor.apply();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (paused) {
+            paused = false;
+            Log.e("%%%%%%%%%%%%%%%", "ONRESUME");
             SharedPreferences sharedPreferences = getSharedPreferences("preferences", 0);
             editText.setText(sharedPreferences.getString("edittext", ""));
-            spinner.setSelection(Integer.parseInt(sharedPreferences.getString("spinner", "0")) - 3);
+            editText.setSelection(editText.getText().length());
+            if (!sharedPreferences.getString("spinner", "0").equals(""))
+                spinner.setSelection(Integer.parseInt(sharedPreferences.getString("spinner", "0")) - 3);
             if (spinner.getSelectedItem() == null)
                 spinner.setSelection(0);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sharedPreferences = getSharedPreferences("preferences", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("edittext", "");
+        editor.putString("spinner", "");
+        editor.apply();
     }
 
     private class Words extends AsyncTask<MainActivity, Void, Void> {
@@ -287,11 +306,11 @@ public class MainActivity extends Activity {
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                     if (meaning == null)
                         meaning = new Meaning();
-                    if(meaning.getStatus() == Status.RUNNING || meaning.getStatus() == Status.PENDING) {
+                    if (meaning.getStatus() == Status.RUNNING || meaning.getStatus() == Status.PENDING) {
                         meaning.cancel(true);
                     }
                     meaning = new Meaning();
-                    Log.e("%%%%%%%%%%%%%%","EXECUTING FOR " + adapter.getItem(position));
+                    Log.e("%%%%%%%%%%%%%%", "EXECUTING FOR " + adapter.getItem(position));
                     meaning.execute(adapter.getItem(position));
                     return true;
                 }
