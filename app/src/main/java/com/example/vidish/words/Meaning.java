@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -50,6 +52,9 @@ public class Meaning extends AsyncTask<String, Void, String> {
             Log.e("EXCEPTION OCCURED", s);
             return;
         }
+        List<WordMeaningObject> list = new ArrayList<>();
+        String lexicalCategory,audio;
+        String[] definitions = new String[0];
         try {
             JSONArray results = new JSONObject(s).getJSONArray("results");
             for (int i = 0; i < results.length(); i++)
@@ -61,18 +66,20 @@ public class Meaning extends AsyncTask<String, Void, String> {
                     for (int k=0; k<entries.length(); k++)
                     {
                         JSONArray senses = entries.getJSONObject(k).getJSONArray("senses");
+                        definitions = new String[senses.length()];
                         for (int l=0;l<senses.length();l++)
                         {
-                            String definitions = senses.getJSONObject(l).getJSONArray("definitions").getString(0);
-                            Log.e("!!!!!!!!!!!!!!!!!!!", definitions);
+                            definitions[l] = senses.getJSONObject(l).getJSONArray("definitions").getString(0);
+                            //Log.e("!!!!!!!!!!!!!!!!!!!", definitions);
                         }
                     }
-                    String lexicalCategory = lexicalEntries.getJSONObject(j).getString("lexicalCategory");
-                    String audio = lexicalEntries.getJSONObject(j).getJSONArray("pronunciations").getJSONObject(0).getString("audioFile");
+                    lexicalCategory = lexicalEntries.getJSONObject(j).getString("lexicalCategory");
+                    audio = lexicalEntries.getJSONObject(j).getJSONArray("pronunciations").getJSONObject(0).getString("audioFile");
+                    list.add(new WordMeaningObject(definitions, lexicalCategory, audio));
                 }
             }
         } catch (Exception e) {
-            Log.e("################",e.toString());
+            //Log.e("################",e.toString());
         }
     }
 }
